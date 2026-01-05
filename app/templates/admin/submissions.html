@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Admin - Submissions{% endblock %}
+{% block content %}
+  <h1>Submissions</h1>
+
+  <div class="list">
+    {% for s in items %}
+      <div class="card pad">
+        <div class="row">
+          <strong>{{ s.business_name }}</strong>
+          <span class="muted">{{ s.status }}</span>
+        </div>
+        <div class="muted">{{ s.category_name }} • {{ s.city_name }}</div>
+        {% if s.contact %}<div><strong>Contact:</strong> {{ s.contact }}</div>{% endif %}
+        {% if s.website %}<div><strong>Website:</strong> {{ s.website }}</div>{% endif %}
+        {% if s.message %}<div style="margin-top:8px;">{{ s.message }}</div>{% endif %}
+
+        <div class="row" style="margin-top:12px;">
+          {% if s.status == "PENDING" %}
+            <form method="post" action="{{ url_for('admin.submissions_approve', sub_id=s.id) }}">
+              <button type="submit">Approve</button>
+            </form>
+            <form method="post" action="{{ url_for('admin.submissions_reject', sub_id=s.id) }}">
+              <button type="submit" class="danger">Reject</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <p class="muted">Nimic încă.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

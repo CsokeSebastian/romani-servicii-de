@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+  <h1>Admin</h1>
+  <p class="muted">Gestionare listări + recomandări.</p>
+
+  <div class="grid">
+    <div class="card pad">
+      <strong>Listări</strong>
+      <div class="big-number">{{ listings }}</div>
+      <a href="{{ url_for('admin.listings') }}">Vezi listări</a>
+    </div>
+    <div class="card pad">
+      <strong>Featured</strong>
+      <div class="big-number">{{ featured }}</div>
+      <a href="{{ url_for('admin.listings') }}">Gestionează</a>
+    </div>
+    <div class="card pad">
+      <strong>Submissions</strong>
+      <div class="big-number">{{ pending }}</div>
+      <a href="{{ url_for('admin.submissions') }}">Vezi submissions</a>
+    </div>
+  </div>
+
+  <p style="margin-top:16px;">
+    <a href="{{ url_for('admin.logout') }}">Logout</a>
+  </p>
+{% endblock %}

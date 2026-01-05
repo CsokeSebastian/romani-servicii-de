@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ listing.name }} - Servicii RO Germania{% endblock %}
+{% block content %}
+  <div class="profile">
+    <div class="profile-media">
+      {% if listing.image_url %}
+        <img src="{{ listing.image_url }}" alt="{{ listing.name }}"/>
+      {% else %}
+        <div class="placeholder big">{{ listing.name[:1] }}</div>
+      {% endif %}
+    </div>
+    <div class="profile-body">
+      <h1>{{ listing.name }}</h1>
+      <div class="muted">{{ listing.category.name }} • {{ listing.city.name }}</div>
+      <div class="badges">
+        {% if listing.featured %}<span class="badge blue">Featured</span>{% endif %}
+        {% if listing.verified %}<span class="badge">Verificat</span>{% endif %}
+      </div>
+
+      {% if listing.description %}
+        <p class="desc">{{ listing.description }}</p>
+      {% endif %}
+
+      <div class="contact">
+        {% if listing.phone %}<div><strong>Telefon:</strong> {{ listing.phone }}</div>{% endif %}
+        {% if listing.whatsapp %}<div><strong>WhatsApp:</strong> {{ listing.whatsapp }}</div>{% endif %}
+        {% if listing.website %}<div><strong>Website:</strong> <a href="{{ listing.website }}" target="_blank" rel="noopener">{{ listing.website }}</a></div>{% endif %}
+        {% if listing.address %}<div><strong>Adresă:</strong> {{ listing.address }}</div>{% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

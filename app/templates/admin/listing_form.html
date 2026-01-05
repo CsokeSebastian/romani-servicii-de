@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Admin - Listing{% endblock %}
+{% block content %}
+  <h1>{% if item %}Editează{% else %}Creează{% endif %} listare</h1>
+
+  <form class="form" method="post" enctype="multipart/form-data">
+    <label>Nume*</label>
+    <input name="name" required value="{{ item.name if item else '' }}"/>
+
+    <label>Descriere</label>
+    <textarea name="description" rows="4">{{ item.description if item and item.description else '' }}</textarea>
+
+    <label>Categorie*</label>
+    <select name="category_id" required>
+      {% for c in categories %}
+        <option value="{{ c.id }}" {% if item and item.category_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Oraș*</label>
+    <select name="city_id" required>
+      {% for c in cities %}
+        <option value="{{ c.id }}" {% if item and item.city_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Adresă</label>
+    <input name="address" value="{{ item.address if item and item.address else '' }}"/>
+
+    <label>Telefon</label>
+    <input name="phone" value="{{ item.phone if item and item.phone else '' }}"/>
+
+    <label>WhatsApp</label>
+    <input name="whatsapp" value="{{ item.whatsapp if item and item.whatsapp else '' }}"/>
+
+    <label>Website</label>
+    <input name="website" value="{{ item.website if item and item.website else '' }}"/>
+
+    <label>Limbi</label>
+    {% set langs = languages_from_str(item.languages) if item else [] %}
+    <div class="checks">
+      <label><input type="checkbox" name="languages" value="ro" {% if 'ro' in langs %}checked{% endif %}/> Română</label>
+      <label><input type="checkbox" name="languages" value="de" {% if 'de' in langs %}checked{% endif %}/> Germană</label>
+      <label><input type="checkbox" name="languages" value="en" {% if 'en' in langs %}checked{% endif %}/> Engleză</label>
+    </div>
+
+    <div class="checks">
+      <label><input type="checkbox" name="verified" {% if item and item.verified %}checked{% endif %}/> Verificat</label>
+      <label><input type="checkbox" name="featured" {% if item and item.featured %}checked{% endif %}/> Featured</label>
+    </div>
+
+    <label>Logo / Poză (upload în Cloudinary)</label>
+    <input type="file" name="image" accept="image/*"/>
+    {% if item and item.image_url %}
+      <p class="muted">Imagine curentă:</p>
+      <img src="{{ item.image_url }}" alt="Current" style="max-width:160px;border-radius:12px;"/>
+    {% endif %}
+
+    <button type="submit">Salvează</button>
+  </form>
+{% endblock %}

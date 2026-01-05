@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Recomandă o firmă - Servicii RO Germania{% endblock %}
+{% block content %}
+  <h1>Recomandă o firmă</h1>
+
+  {% if success %}
+    <div class="flash success">Mulțumim! Recomandarea ta a fost trimisă.</div>
+  {% endif %}
+
+  <form class="form" method="post">
+    <input type="text" name="company_website" class="honeypot" autocomplete="off"/>
+
+    <label>Nume firmă*</label>
+    <input name="business_name" required />
+
+    <label>Categorie* (ex: Dentist, Avocat, Contabil)</label>
+    <input name="category_name" required />
+
+    <label>Oraș* (ex: München)</label>
+    <input name="city_name" required />
+
+    <label>Contact (telefon/email)</label>
+    <input name="contact" />
+
+    <label>Website</label>
+    <input name="website" />
+
+    <label>Detalii</label>
+    <textarea name="message" rows="4"></textarea>
+
+    <label>Numele tău (opțional)</label>
+    <input name="submitter_name"/>
+
+    <label>Email (opțional)</label>
+    <input name="submitter_email"/>
+
+    <button type="submit">Trimite</button>
+  </form>
+{% endblock %}
