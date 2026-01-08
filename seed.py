@@ -7,10 +7,10 @@ CATEGORIES = [
     "Dentiști",
     "Avocați",
     "Contabili",
-    "Renovări",
-    "Auto Service",
+    "Constructori",
+    "Mecanici Auto",
     "Frizerii",
-    "Medic de familie",
+    "Medici",
     "Traducători"
 ]
 
@@ -32,20 +32,45 @@ CITIES = [
 def main():
     app = create_app()
     with app.app_context():
-        # Categories
+
+        # --------------------
+        # CATEGORIES (UPSERT)
+        # --------------------
+        existing_categories = {c.slug: c for c in Category.query.all()}
+
         for name in CATEGORIES:
             slug = slugify(name)
-            if not Category.query.filter_by(slug=slug).first():
+            if slug in existing_categories:
+                existing_categories[slug].name = name
+            else:
                 db.session.add(Category(name=name, slug=slug))
 
-        # Cities
+        # --------------------
+        # CITIES (UPSERT)
+        # --------------------
+        existing_cities = {c.slug: c for c in City.query.all()}
+
         for name, state, lat, lng in CITIES:
             slug = slugify(name)
-            if not City.query.filter_by(slug=slug).first():
-                db.session.add(City(name=name, slug=slug, state=state, lat=lat, lng=lng))
+            if slug in existing_cities:
+                city = existing_cities[slug]
+                city.name = name
+                city.state = state
+                city.lat = lat
+                city.lng = lng
+            else:
+                db.session.add(
+                    City(
+                        name=name,
+                        slug=slug,
+                        state=state,
+                        lat=lat,
+                        lng=lng
+                    )
+                )
 
         db.session.commit()
-        print("Seed done.")
+        print("✅ Seed completed successfully.")
 
 if __name__ == "__main__":
     main()

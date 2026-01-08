@@ -5,8 +5,32 @@ from ..extensions import db
 from ..models import Category, City, Listing, Submission
 from ..utils import languages_from_str
 from ..utils import geocode_location
+from ..utils import send_contact_email
 
 public_bp = Blueprint("public", __name__)
+
+@public_bp.route("/contact", methods=["GET", "POST"])
+def contact():
+    success = False
+    error = False
+
+    if request.method == "POST":
+        # honeypot
+        if request.form.get("company_website"):
+            success = True
+        else:
+            name = request.form.get("name", "").strip()
+            email = request.form.get("email", "").strip()
+            message = request.form.get("message", "").strip()
+
+            if name and email and message:
+                try:
+                    send_contact_email(name, email, message)
+                    success = True
+                except Exception:
+                    error = True
+
+    return render_template("contact.html", success=success, error=error)
 
 RADIUS_ALLOWED = (5, 10, 20, 50)
 
