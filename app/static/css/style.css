@@ -7,6 +7,16 @@
   --danger:#ff4d4d; 
 }
 
+/* footer height (used only on home when fixed) */
+:root{
+  --footer-h: 96px; /* desktop */
+}
+@media (max-width: 900px){
+  :root{
+    --footer-h: 124px; /* mobile (2 lines) */
+  }
+}
+
 *{ box-sizing:border-box; }
 
 html, body { height:100%; }
@@ -16,9 +26,6 @@ body{
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; 
   background:var(--bg); 
   color:var(--text);
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
 }
 
 a{ color:var(--text); text-decoration:none; }
@@ -38,11 +45,6 @@ a{ color:var(--text); text-decoration:none; }
 .nav a{ margin-left:16px; color:var(--muted); }
 .nav a:hover{ color:var(--text); }
 
-/* MAIN */
-main.container{
-  flex: 1;
-  padding-bottom: 90px; 
-}
 /* HERO */
 .hero{ padding:22px 0 10px; }
 .hero h1{ margin:0 0 8px; font-size:28px; }
@@ -155,8 +157,37 @@ select:disabled { opacity:.55; cursor:not-allowed; }
 .profile-body h1{ margin:0 0 8px; }
 .desc{ color:var(--muted); }
 
-/* FOOTER */
-.footer{
+/* FOOTER (default = normal / static) */
+.footer{ 
+  border-top:1px solid rgba(255,255,255,.08); 
+  margin-top:24px; 
+  padding:18px 0; 
+  color:var(--muted);
+  text-align:center;
+}
+.footer-inner{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  align-items:center;
+}
+.footer-links{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.footer a{ color:var(--muted); }
+.footer a:hover{ color:var(--text); }
+.footer .sep{ opacity:.5; }
+
+/* FOOTER fixed ONLY on home (body.footer-fixed) */
+body.footer-fixed{
+  padding-bottom: var(--footer-h);
+}
+
+body.footer-fixed .footer{
   position: fixed;
   left: 0;
   right: 0;
@@ -167,31 +198,8 @@ select:disabled { opacity:.55; cursor:not-allowed; }
   backdrop-filter: blur(10px);
 
   border-top:1px solid rgba(255,255,255,.08);
+  margin-top:0;
   padding:14px 0;
-  color:var(--muted);
-  text-align:center;
-}
-
-.footer-inner{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  align-items:center;
-}
-
-.footer-links{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-
-.footer a{ color:var(--muted); }
-.footer a:hover{ color:var(--text); }
-
-.footer .sep{
-  opacity:.5;
 }
 
 /* RESPONSIVE */
