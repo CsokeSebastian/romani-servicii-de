@@ -19,14 +19,22 @@
 
 <body class="{% block body_class %}{% endblock %}">
   <header class="header">
-    <div class="container header-inner">
-      <a class="brand" href="{{ url_for('public.home') }}">Servicii RO 🇩🇪</a>
-      <nav class="nav">
-        <a href="{{ url_for('public.recommend') }}">Recomandă o firmă</a>
-        <a href="{{ url_for('public.contact') }}">Contact</a>
-      </nav>
-    </div>
-  </header>
+  <div class="container header-inner">
+    <a class="brand brand-logo" href="{{ url_for('public.home') }}">
+      <img
+        class="logo"
+        src="{{ url_for('static', filename='img/logo.png') }}"
+        alt="Servicii pentru Români în Germania">
+      <span>Servicii RO 🇩🇪</span>
+    </a>
+
+    <nav class="nav">
+      <a href="{{ url_for('public.recommend') }}">Recomandă o firmă</a>
+      <a href="{{ url_for('public.contact') }}">Contact</a>
+    </nav>
+
+  </div>
+</header>
 
   <main class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}

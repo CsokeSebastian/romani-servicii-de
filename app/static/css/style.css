@@ -33,6 +33,7 @@ a{ color:var(--text); text-decoration:none; }
 .container{ width:min(980px, 92%); margin:0 auto; }
 
 /* HEADER */
+
 .header{ 
   border-bottom:1px solid rgba(255,255,255,.08); 
   background:rgba(0,0,0,.2); 
@@ -44,6 +45,37 @@ a{ color:var(--text); text-decoration:none; }
 .brand{ font-weight:800; letter-spacing:.2px; }
 .nav a{ margin-left:16px; color:var(--muted); }
 .nav a:hover{ color:var(--text); }
+.header .brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:700;
+}
+
+.header .brand img,
+.header .brand .logo{
+  height:50px !important;
+  max-height:50px !important;
+  width:auto !important;
+  max-width:50px !important;
+  object-fit:contain;
+  display:block;
+}
+
+/* TEXT lângă logo */
+.header .brand span{
+  white-space:nowrap;
+}
+
+/* MOBILE */
+@media (max-width: 600px){
+  .header .brand img,
+  .header .brand .logo{
+    height:26px !important;
+    max-height:26px !important;
+    max-width:26px !important;
+  }
+}
 
 /* HERO */
 .hero{ padding:22px 0 10px; }
