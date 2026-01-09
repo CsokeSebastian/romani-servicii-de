@@ -19,11 +19,11 @@
     </select>
 
     <label>Oraș*</label>
-    <select name="city_id" required>
-      {% for c in cities %}
-        <option value="{{ c.id }}" {% if item and item.city_id == c.id %}selected{% endif %}>{{ c.name }}</option>
-      {% endfor %}
-    </select>
+    <input
+      name="city_name"
+      placeholder="ex: 31655 Stadthagen"
+      value="{{ item.city.name if item and item.city else '' }}"
+      required/>
 
     <label>Adresă</label>
     <input name="address" value="{{ item.address if item and item.address else '' }}"/>
