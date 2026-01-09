@@ -12,6 +12,7 @@ CATEGORIES = [
     "Frizerii",
     "Medici",
     "Traducători"
+    "Altele"
 ]
 
 CITIES = [
