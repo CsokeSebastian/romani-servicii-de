@@ -7,16 +7,6 @@
   --danger:#ff4d4d; 
 }
 
-/* footer height (used only on home when fixed) */
-:root{
-  --footer-h: 96px; /* desktop */
-}
-@media (max-width: 900px){
-  :root{
-    --footer-h: 124px; /* mobile (2 lines) */
-  }
-}
-
 *{ box-sizing:border-box; }
 
 html, body { height:100%; }
@@ -26,14 +16,23 @@ body{
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; 
   background:var(--bg); 
   color:var(--text);
+
+  /* STICKY FOOTER (corect) */
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
 }
 
 a{ color:var(--text); text-decoration:none; }
 
 .container{ width:min(980px, 92%); margin:0 auto; }
 
-/* HEADER */
+/* MAIN trebuie să împingă footerul jos */
+main.main{
+  flex: 1;
+}
 
+/* HEADER */
 .header{ 
   border-bottom:1px solid rgba(255,255,255,.08); 
   background:rgba(0,0,0,.2); 
@@ -45,6 +44,7 @@ a{ color:var(--text); text-decoration:none; }
 .brand{ font-weight:800; letter-spacing:.2px; }
 .nav a{ margin-left:16px; color:var(--muted); }
 .nav a:hover{ color:var(--text); }
+
 .header .brand{
   display:flex;
   align-items:center;
@@ -189,7 +189,7 @@ select:disabled { opacity:.55; cursor:not-allowed; }
 .profile-body h1{ margin:0 0 8px; }
 .desc{ color:var(--muted); }
 
-/* FOOTER (default = normal / static) */
+/* FOOTER (sticky footer corect: NU fixed) */
 .footer{ 
   border-top:1px solid rgba(255,255,255,.08); 
   margin-top:24px; 
@@ -213,26 +213,6 @@ select:disabled { opacity:.55; cursor:not-allowed; }
 .footer a{ color:var(--muted); }
 .footer a:hover{ color:var(--text); }
 .footer .sep{ opacity:.5; }
-
-/* FOOTER fixed ONLY on home (body.footer-fixed) */
-body.footer-fixed{
-  padding-bottom: var(--footer-h);
-}
-
-body.footer-fixed .footer{
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 999;
-
-  background: rgba(11,12,16,.95);
-  backdrop-filter: blur(10px);
-
-  border-top:1px solid rgba(255,255,255,.08);
-  margin-top:0;
-  padding:14px 0;
-}
 
 /* RESPONSIVE */
 @media (max-width: 900px){
