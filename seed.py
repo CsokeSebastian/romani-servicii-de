@@ -11,7 +11,7 @@ CATEGORIES = [
     "Mecanici Auto",
     "Frizerii",
     "Medici",
-    "Traducători"
+    "Traducători",
     "Altele"
 ]
 

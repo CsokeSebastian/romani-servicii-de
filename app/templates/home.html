@@ -73,6 +73,7 @@
   </section>
   {% endif %}
 
+{% if has_filters %}
   <section>
     <h2>Rezultate</h2>
     <div class="list">
@@ -86,18 +87,14 @@
             {% endif %}
           </div>
           <div class="li-body">
-            <a class="li-title" href="{{ url_for('public.listing_page', slug=item.slug) }}">
-              {{ item.name }}
-            </a>
+            <a class="li-title" href="{{ url_for('public.listing_page', slug=item.slug) }}">{{ item.name }}</a>
             <div class="muted">{{ item.category.name }} • {{ item.city.name }}</div>
             <div class="badges">
               {% if item.featured %}<span class="badge blue">Featured</span>{% endif %}
               {% if item.verified %}<span class="badge">Verificat</span>{% endif %}
               {% set langs = languages_from_str(item.languages) %}
               {% if langs %}
-                <span class="chip">
-                  RO{% if 'de' in langs %}, DE{% endif %}{% if 'en' in langs %}, EN{% endif %}
-                </span>
+                <span class="chip">RO{% if 'de' in langs %}, DE{% endif %}{% if 'en' in langs %}, EN{% endif %}</span>
               {% endif %}
             </div>
           </div>
@@ -107,4 +104,5 @@
       {% endfor %}
     </div>
   </section>
+{% endif %}
 {% endblock %}

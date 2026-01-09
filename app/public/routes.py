@@ -127,6 +127,7 @@ def home():
     category_slug = request.args.get("category", "").strip()
     location = request.args.get("location", "").strip()
     radius_km = request.args.get("radius", "").strip()
+    city_slug = request.args.get("city", "").strip()
 
     featured = (
         Listing.query
@@ -200,6 +201,18 @@ def home():
         .limit(30)
         .all()
     )
+    # has_filters = bool(q_text or category_slug or city_slug or radius_km)
+
+    # return render_template(
+    #     "home.html",
+    #     featured=featured,
+    #     listings=listings,
+    #     q=q_text,
+    #     category_slug=category_slug,
+    #     location=location,
+    #     radius_km=radius_km
+    # )
+    has_filters = bool(q_text or category_slug or city_slug or radius_km)
 
     return render_template(
         "home.html",
@@ -207,10 +220,10 @@ def home():
         listings=listings,
         q=q_text,
         category_slug=category_slug,
-        location=location,
-        radius_km=radius_km
+        city_slug=city_slug,
+        radius_km=radius_km,
+        has_filters=has_filters
     )
-
 
 @public_bp.get("/category/<slug>")
 def category_page(slug: str):
