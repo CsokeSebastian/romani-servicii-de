@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+<!-- {% extends "base.html" %}
 {% block title %}{{ seo_title }}{% endblock %}
 {% block meta_description %}{{ seo_description }}{% endblock %}
 
@@ -46,4 +46,147 @@
       {% endfor %}
     </div>
   </section>
+{% endblock %} -->
+
+
+{% extends "base.html" %}
+
+{# =========================
+   SEO – HEAD BLOCKS
+   ========================= #}
+
+{% block title %}
+{{ seo_title }} | Servicii RO 🇩🇪
+{% endblock %}
+
+{% block meta_description %}
+{{ (seo_description or (category.name ~ " români în " ~ city.name ~ ". Listă de firme și contacte."))[:155] | trim }}
+{% endblock %}
+
+{% block canonical %}
+{{ url_for('public.seo_landing', category_slug=category.slug, city_slug=city.slug, _external=True) | replace('http://','https://') }}
+{% endblock %}
+
+{% block og_title %}
+{{ category.name }} români în {{ city.name }}
+{% endblock %}
+
+{% block og_description %}
+{{ (seo_description or (category.name ~ " români în " ~ city.name ~ "."))[:155] | trim }}
+{% endblock %}
+
+{% block twitter_title %}
+{{ category.name }} în {{ city.name }}
+{% endblock %}
+
+{% block twitter_description %}
+{{ (seo_description or (category.name ~ " români în " ~ city.name ~ "."))[:155] | trim }}
+{% endblock %}
+
+{# =========================
+   PAGE CONTENT
+   ========================= #}
+
+{% block content %}
+
+<section class="hero">
+  <h1>{{ category.name }} români în {{ city.name }}</h1>
+
+  <p class="muted">
+    Servicii oferite de români sau în limba română în {{ city.name }}.
+    Listă verificată și recomandată de comunitate.
+  </p>
+
+  <div class="filters" style="margin-top:12px;">
+    <a class="btn" href="{{ url_for('public.category_page', slug=category.slug) }}">
+      Vezi toți {{ category.name }}
+    </a>
+    <a class="btn" href="{{ url_for('public.city_page', slug=city.slug) }}">
+      Vezi toate serviciile în {{ city.name }}
+    </a>
+    <a class="btn" href="{{ url_for('public.recommend') }}">
+      Recomandă o firmă
+    </a>
+  </div>
+</section>
+
+<section>
+  <h2>Firme listate</h2>
+
+  <div class="list">
+    {% for item in listings %}
+      <div class="list-item">
+        <div class="avatar">
+          {% if item.image_url %}
+            <img
+              src="{{ item.image_url }}"
+              alt="{{ item.name }} – {{ category.name }} în {{ city.name }}"
+              loading="lazy"
+            />
+          {% else %}
+            <div class="placeholder">{{ item.name[:1] }}</div>
+          {% endif %}
+        </div>
+
+        <div class="li-body">
+          <a class="li-title" href="{{ url_for('public.listing_page', slug=item.slug) }}">
+            {{ item.name }}
+          </a>
+
+          <div class="muted">
+            {{ item.category.name }} • {{ item.city.name }}
+          </div>
+
+          <div class="badges">
+            {% if item.featured %}<span class="badge blue">Featured</span>{% endif %}
+            {% if item.verified %}<span class="badge">Verificat</span>{% endif %}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p class="muted">
+        Încă nu avem firme în categoria „{{ category.name }}” pentru {{ city.name }}.
+        Poți recomanda una aici:
+        <a href="{{ url_for('public.recommend') }}">Recomandă o firmă</a>.
+      </p>
+    {% endfor %}
+  </div>
+</section>
+
+{# =========================
+   Internal links (SEO)
+   ========================= #}
+<section style="margin-top:18px;">
+  <h2>Explorează și alte pagini</h2>
+  <ul class="muted" style="line-height:1.9;">
+    <li>
+      <a href="{{ url_for('public.category_page', slug=category.slug) }}">
+        Toți {{ category.name }} din Germania
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('public.city_page', slug=city.slug) }}">
+        Toate serviciile românești în {{ city.name }}
+      </a>
+    </li>
+  </ul>
+</section>
+
+{# =========================
+   Schema.org – CollectionPage
+   ========================= #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ (category.name ~ " români în " ~ city.name)|tojson }},
+  "description": {{ (seo_description or "")|tojson }},
+  "url": {{ (url_for('public.seo_landing', category_slug=category.slug, city_slug=city.slug, _external=True) | replace('http://','https://'))|tojson }},
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Servicii RO 🇩🇪"
+  }
+}
+</script>
+
 {% endblock %}

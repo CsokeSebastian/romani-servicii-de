@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+<!-- {% extends "base.html" %}
 {% block title %}{{ category.name }} - Servicii RO Germania{% endblock %}
 {% block content %}
 
@@ -59,4 +59,172 @@
       sync();
     })();
   </script>
+{% endblock %} -->
+
+
+{% extends "base.html" %}
+
+{# =========================
+   SEO – HEAD BLOCKS
+   ========================= #}
+
+{% block title %}
+{{ category.name }} români în Germania | Firme și servicii | Servicii RO 🇩🇪
+{% endblock %}
+
+{% block meta_description %}
+Găsește {{ category.name|lower }} care vorbesc română în Germania. Filtrează după oraș, rază, verificat sau featured și contactează rapid firmele.
+{% endblock %}
+
+{% block canonical %}
+{{ url_for('public.category_page', slug=category.slug, _external=True) | replace('http://','https://') }}
+{% endblock %}
+
+{% block og_title %}
+{{ category.name }} români în Germania
+{% endblock %}
+
+{% block og_description %}
+Firme și servicii de tip {{ category.name|lower }} în limba română în Germania. Filtre după oraș, rază, verificat și featured.
+{% endblock %}
+
+{% block twitter_title %}
+{{ category.name }} români în Germania
+{% endblock %}
+
+{% block twitter_description %}
+Firme și servicii de tip {{ category.name|lower }} în limba română în Germania. Filtrează după oraș și rază.
+{% endblock %}
+
+{# =========================
+   PAGE CONTENT
+   ========================= #}
+
+{% block content %}
+
+<h1>{{ category.name }} români în Germania</h1>
+
+<p class="muted" style="margin-top:6px;">
+  Selectează un oraș (și opțional o rază) pentru a vedea firme relevante în zona ta.
+</p>
+
+<form class="filters" method="get">
+  <select name="city" id="citySelectCategory">
+    <option value="">Alege oraș (pentru rază)</option>
+    {% for c in all_cities %}
+      <option value="{{ c.slug }}" {% if c.slug == city_slug %}selected{% endif %}>
+        {{ c.name }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <select name="radius" id="radiusSelectCategory">
+    <option value="">Rază (opțional)</option>
+    {% for r in ['5','10','20','50'] %}
+      <option value="{{ r }}" {% if radius_km == r %}selected{% endif %}>
+        {{ r }} km
+      </option>
+    {% endfor %}
+  </select>
+
+  <label>
+    <input type="checkbox" name="verified" value="1" {% if verified %}checked{% endif %}/>
+    Verificat
+  </label>
+
+  <label>
+    <input type="checkbox" name="featured" value="1" {% if featured %}checked{% endif %}/>
+    Featured
+  </label>
+
+  <button type="submit">Aplică</button>
+</form>
+
+<div class="list">
+  {% for item in listings %}
+    <div class="list-item">
+      <div class="avatar">
+        {% if item.image_url %}
+          <img
+            src="{{ item.image_url }}"
+            alt="{{ item.name }} – {{ category.name }} în {{ item.city.name }}"
+            loading="lazy"
+          />
+        {% else %}
+          <div class="placeholder">{{ item.name[:1] }}</div>
+        {% endif %}
+      </div>
+
+      <div class="li-body">
+        <a class="li-title" href="{{ url_for('public.listing_page', slug=item.slug) }}">
+          {{ item.name }}
+        </a>
+
+        <div class="muted">{{ item.city.name }}</div>
+
+        <div class="badges">
+          {% if item.featured %}<span class="badge blue">Featured</span>{% endif %}
+          {% if item.verified %}<span class="badge">Verificat</span>{% endif %}
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <p class="muted">Niciun rezultat.</p>
+  {% endfor %}
+</div>
+
+{# =========================
+   Internal links: category + city landings
+   ========================= #}
+<section style="margin-top:18px;">
+  <h2>{{ category.name }} în orașe populare</h2>
+  <p class="muted">
+    Pagini dedicate (categorie + oraș) pentru rezultate mai relevante.
+  </p>
+
+  <ul class="muted" style="line-height:1.9;">
+    {% for c in all_cities[:12] %}
+      <li>
+        <a href="{{ url_for('public.seo_landing', category_slug=category.slug, city_slug=c.slug) }}">
+          {{ category.name }} în {{ c.name }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+
+{# =========================
+   Schema.org – CollectionPage
+   ========================= #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ (category.name ~ " români în Germania")|tojson }},
+  "description": {{ ("Firme și servicii de tip " ~ category.name ~ " în limba română în Germania.")|tojson }},
+  "url": {{ (url_for('public.category_page', slug=category.slug, _external=True) | replace('http://','https://'))|tojson }},
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Servicii RO 🇩🇪"
+  }
+}
+</script>
+
+<script>
+  (function() {
+    const city = document.getElementById("citySelectCategory");
+    const radius = document.getElementById("radiusSelectCategory");
+    if (!city || !radius) return;
+
+    function sync() {
+      const hasCity = city.value && city.value.trim().length > 0;
+      radius.disabled = !hasCity;
+      if (!hasCity) radius.value = "";
+    }
+
+    city.addEventListener("change", sync);
+    sync();
+  })();
+</script>
+
 {% endblock %}

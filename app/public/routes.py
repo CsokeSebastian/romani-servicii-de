@@ -5,6 +5,7 @@ from ..extensions import db
 from ..models import Category, City, Listing, Submission
 from ..utils import languages_from_str
 from ..utils import geocode_location
+from datetime import datetime, timezone
 from ..utils import send_contact_email
 
 public_bp = Blueprint("public", __name__)
@@ -58,69 +59,6 @@ def inject_globals():
         "languages_from_str": languages_from_str
     }
 
-# @public_bp.get("/")
-# def home():
-#     q_text = request.args.get("q", "").strip()
-#     category_slug = request.args.get("category", "").strip()
-#     city_slug = request.args.get("city", "").strip()
-#     radius_km = request.args.get("radius", "").strip()
-
-#     featured = Listing.query.filter_by(featured=True).order_by(Listing.updated_at.desc()).limit(8).all()
-
-#     listings_query = Listing.query  # IMPORTANT: pornește mereu din Listing
-
-#     # category filter
-#     if category_slug:
-#         cat = Category.query.filter_by(slug=category_slug).first()
-#         if cat:
-#             listings_query = listings_query.filter(Listing.category_id == cat.id)
-
-#     # city filter
-#     city = None
-#     if city_slug:
-#         city = City.query.filter_by(slug=city_slug).first()
-#         if city:
-#             listings_query = listings_query.filter(Listing.city_id == city.id)
-
-#     # text search (name + description + category + city + languages)
-#     if q_text:
-#         listings_query = (
-#             listings_query
-#             .join(Category, Listing.category_id == Category.id)
-#             .join(City, Listing.city_id == City.id)
-#             .filter(or_(
-#                 Listing.name.ilike(f"%{q_text}%"),
-#                 Listing.description.ilike(f"%{q_text}%"),
-#                 Category.name.ilike(f"%{q_text}%"),
-#                 City.name.ilike(f"%{q_text}%"),
-#                 Listing.languages.ilike(f"%{q_text}%"),
-#             ))
-#             .distinct()
-#         )
-
-#     # radius filter (doar dacă e selectat oraș)
-#     if city and radius_km.isdigit():
-#         r = int(radius_km)
-#         if r in RADIUS_ALLOWED and city.lat is not None and city.lng is not None:
-#             listings_query = listings_query.join(City, Listing.city_id == City.id)
-#             listings_query = _apply_radius_filter(listings_query, city.lat, city.lng, r)
-
-#     listings = (
-#         listings_query
-#         .order_by(Listing.featured.desc(), Listing.verified.desc(), Listing.updated_at.desc())
-#         .limit(30)
-#         .all()
-#     )
-
-#     return render_template(
-#         "home.html",
-#         featured=featured,
-#         listings=listings,
-#         q=q_text,
-#         category_slug=category_slug,
-#         city_slug=city_slug,
-#         radius_km=radius_km
-#     )
 @public_bp.get("/")
 def home():
     q_text = request.args.get("q", "").strip()
@@ -201,17 +139,7 @@ def home():
         .limit(30)
         .all()
     )
-    # has_filters = bool(q_text or category_slug or city_slug or radius_km)
 
-    # return render_template(
-    #     "home.html",
-    #     featured=featured,
-    #     listings=listings,
-    #     q=q_text,
-    #     category_slug=category_slug,
-    #     location=location,
-    #     radius_km=radius_km
-    # )
     has_filters = bool(q_text or category_slug or city_slug or radius_km)
 
     return render_template(
@@ -356,37 +284,73 @@ def seo_landing(category_slug: str, city_slug: str):
     )
 
 # sitemap.xml
+# @public_bp.get("/sitemap.xml")
+# def sitemap():
+#     base = request.url_root.rstrip("/").replace("http://", "https://")
+
+#     categories = Category.query.all()
+#     cities = City.query.all()
+#     listings = Listing.query.all()
+
+#     pages = []
+#     pages.append(f"{base}{url_for('public.home')}")
+
+#     for c in categories:
+#         pages.append(f"{base}{url_for('public.category_page', slug=c.slug)}")
+#     for city in cities:
+#         pages.append(f"{base}{url_for('public.city_page', slug=city.slug)}")
+#     for c in categories:
+#         for city in cities:
+#             pages.append(f"{base}{url_for('public.seo_landing', category_slug=c.slug, city_slug=city.slug)}")
+#     for l in listings:
+#         pages.append((f"{base}{url_for('public.listing_page', slug=l.slug)}", l.updated_at))
+
+#     xml = [
+#         '<?xml version="1.0" encoding="UTF-8"?>',
+#         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+#     ]
+#     for p in pages:
+#         xml.append("  <url>")
+#         xml.append(f"    <loc>{p}</loc>")
+#         xml.append("  </url>")
+#     xml.append("</urlset>")
+
+#     return Response("\n".join(xml), mimetype="application/xml")
+
 @public_bp.get("/sitemap.xml")
 def sitemap():
-    base = request.url_root.rstrip("/")
+    base = request.url_root.rstrip("/").replace("http://", "https://")
+    now = datetime.now(timezone.utc)
 
     categories = Category.query.all()
     cities = City.query.all()
-    listings = Listing.query.all()
+    listings = Listing.query.with_entities(Listing.slug, Listing.updated_at).all()
 
-    pages = []
-    pages.append(f"{base}{url_for('public.home')}")
+    urls = []
+    urls.append((f"{base}{url_for('public.home')}", now))
 
     for c in categories:
-        pages.append(f"{base}{url_for('public.category_page', slug=c.slug)}")
+        urls.append((f"{base}{url_for('public.category_page', slug=c.slug)}", now))
     for city in cities:
-        pages.append(f"{base}{url_for('public.city_page', slug=city.slug)}")
+        urls.append((f"{base}{url_for('public.city_page', slug=city.slug)}", now))
     for c in categories:
         for city in cities:
-            pages.append(f"{base}{url_for('public.seo_landing', category_slug=c.slug, city_slug=city.slug)}")
-    for l in listings:
-        pages.append(f"{base}{url_for('public.listing_page', slug=l.slug)}")
+            urls.append((f"{base}{url_for('public.seo_landing', category_slug=c.slug, city_slug=city.slug)}", now))
+    for slug, updated_at in listings:
+        urls.append((f"{base}{url_for('public.listing_page', slug=slug)}", updated_at or now))
 
     xml = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
     ]
-    for p in pages:
-        xml.append("  <url>")
-        xml.append(f"    <loc>{p}</loc>")
-        xml.append("  </url>")
-    xml.append("</urlset>")
 
+    for loc, lastmod in urls:
+        xml.append("  <url>")
+        xml.append(f"    <loc>{loc}</loc>")
+        xml.append(f"    <lastmod>{lastmod.date().isoformat()}</lastmod>")
+        xml.append("  </url>")
+
+    xml.append("</urlset>")
     return Response("\n".join(xml), mimetype="application/xml")
 
 @public_bp.get("/impressum")
@@ -396,3 +360,22 @@ def impressum():
 @public_bp.get("/datenschutz")
 def datenschutz():
     return render_template("datenschutz.html")
+
+@public_bp.get("/robots.txt")
+def robots_txt():
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+
+        # admin-ul tău real:
+        "Disallow: /control-9f3a7",
+
+        # opțional: pagini utilitare (dacă vrei)
+        # "Disallow: /recommend",
+        # "Disallow: /contact",
+    ]
+
+    sitemap_url = url_for("public.sitemap", _external=True).replace("http://", "https://")
+    lines.append(f"Sitemap: {sitemap_url}")
+
+    return Response("\n".join(lines) + "\n", mimetype="text/plain")
