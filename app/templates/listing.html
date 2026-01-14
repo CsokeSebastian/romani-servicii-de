@@ -1,36 +1,3 @@
-<!-- {% extends "base.html" %}
-{% block title %}{{ listing.name }} - Servicii RO Germania{% endblock %}
-{% block content %}
-
-  <div class="profile">
-    <div class="profile-media">
-      {% if listing.image_url %}
-        <img src="{{ listing.image_url }}" alt="{{ listing.name }}"/>
-      {% else %}
-        <div class="placeholder big">{{ listing.name[:1] }}</div>
-      {% endif %}
-    </div>
-    <div class="profile-body">
-      <h1>{{ listing.name }}</h1>
-      <div class="muted">{{ listing.category.name }} • {{ listing.city.name }}</div>
-      <div class="badges">
-        {% if listing.featured %}<span class="badge blue">Featured</span>{% endif %}
-        {% if listing.verified %}<span class="badge">Verificat</span>{% endif %}
-      </div>
-
-      {% if listing.description %}
-        <p class="desc">{{ listing.description }}</p>
-      {% endif %}
-
-      <div class="contact">
-        {% if listing.phone %}<div><strong>Telefon:</strong> {{ listing.phone }}</div>{% endif %}
-        {% if listing.whatsapp %}<div><strong>WhatsApp:</strong> {{ listing.whatsapp }}</div>{% endif %}
-        {% if listing.website %}<div><strong>Website:</strong> <a href="{{ listing.website }}" target="_blank" rel="noopener">{{ listing.website }}</a></div>{% endif %}
-        {% if listing.address %}<div><strong>Adresă:</strong> {{ listing.address }}</div>{% endif %}
-      </div>
-    </div>
-  </div>
-{% endblock %} -->
 {% extends "base.html" %}
 
 {# =========================
@@ -38,32 +5,32 @@
    ========================= #}
 
 {% block title %}
-{{ listing.name }} – {{ listing.category.name }} în {{ listing.city.name }} | Servicii RO 🇩🇪
-{% endblock %}
+{{ listing.name }} – {{ listing.category.name if listing.category else 'Servicii' }} în {{ listing.city.name if listing.city else 'Germania' }} | Servicii RO 🇩🇪
+{% endblock title %}
 
 {% block meta_description %}
-{{ (listing.description or (listing.category.name ~ " în " ~ listing.city.name ~ ". Contact direct."))[:155] | trim }}
-{% endblock %}
+{{ (listing.description or ((listing.category.name if listing.category else 'Servicii') ~ " în " ~ (listing.city.name if listing.city else 'Germania') ~ ". Contact direct."))[:155] | trim }}
+{% endblock meta_description %}
 
 {% block canonical %}
 {{ url_for('public.listing_page', slug=listing.slug, _external=True) | replace('http://','https://') }}
-{% endblock %}
+{% endblock canonical %}
 
 {% block og_title %}
-{{ listing.name }} – {{ listing.city.name }}
-{% endblock %}
+{{ listing.name }} – {{ listing.city.name if listing.city else 'Germania' }}
+{% endblock og_title %}
 
 {% block og_description %}
-{{ (listing.description or (listing.category.name ~ " în " ~ listing.city.name ~ "."))[:155] | trim }}
-{% endblock %}
+{{ (listing.description or ((listing.category.name if listing.category else 'Servicii') ~ " în " ~ (listing.city.name if listing.city else 'Germania') ~ "."))[:155] | trim }}
+{% endblock og_description %}
 
 {% block twitter_title %}
-{{ listing.name }} – {{ listing.city.name }}
-{% endblock %}
+{{ listing.name }} – {{ listing.city.name if listing.city else 'Germania' }}
+{% endblock twitter_title %}
 
 {% block twitter_description %}
-{{ (listing.description or (listing.category.name ~ " în " ~ listing.city.name ~ "."))[:155] | trim }}
-{% endblock %}
+{{ (listing.description or ((listing.category.name if listing.category else 'Servicii') ~ " în " ~ (listing.city.name if listing.city else 'Germania') ~ "."))[:155] | trim }}
+{% endblock twitter_description %}
 
 {# =========================
    PAGE CONTENT
@@ -77,7 +44,7 @@
     {% if listing.image_url %}
       <img
         src="{{ listing.image_url }}"
-        alt="{{ listing.name }} – {{ listing.category.name }} în {{ listing.city.name }}"
+        alt="{{ listing.name }} – {{ (listing.category.name if listing.category else 'Servicii') }} în {{ (listing.city.name if listing.city else 'Germania') }}"
         loading="lazy"
       />
     {% else %}
@@ -90,16 +57,14 @@
     <h1>{{ listing.name }}</h1>
 
     <div class="muted">
-      {{ listing.category.name }} • {{ listing.city.name }}
+      {{ listing.category.name if listing.category else '' }}
+      {% if listing.category and listing.city %} • {% endif %}
+      {{ listing.city.name if listing.city else '' }}
     </div>
 
     <div class="badges">
-      {% if listing.featured %}
-        <span class="badge blue">Featured</span>
-      {% endif %}
-      {% if listing.verified %}
-        <span class="badge">Verificat</span>
-      {% endif %}
+      {% if listing.featured %}<span class="badge blue">Featured</span>{% endif %}
+      {% if listing.verified %}<span class="badge">Verificat</span>{% endif %}
     </div>
 
     {% if listing.description %}
@@ -107,13 +72,8 @@
     {% endif %}
 
     <div class="contact">
-      {% if listing.phone %}
-        <div><strong>Telefon:</strong> {{ listing.phone }}</div>
-      {% endif %}
-
-      {% if listing.whatsapp %}
-        <div><strong>WhatsApp:</strong> {{ listing.whatsapp }}</div>
-      {% endif %}
+      {% if listing.phone %}<div><strong>Telefon:</strong> {{ listing.phone }}</div>{% endif %}
+      {% if listing.whatsapp %}<div><strong>WhatsApp:</strong> {{ listing.whatsapp }}</div>{% endif %}
 
       {% if listing.website %}
         <div>
@@ -124,14 +84,10 @@
         </div>
       {% endif %}
 
-      {% if listing.address %}
-        <div><strong>Adresă:</strong> {{ listing.address }}</div>
-      {% endif %}
+      {% if listing.address %}<div><strong>Adresă:</strong> {{ listing.address }}</div>{% endif %}
     </div>
 
-    {# =========================
-       Schema.org – LocalBusiness
-       ========================= #}
+    {# Schema.org – LocalBusiness (SAFE) #}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -142,7 +98,7 @@
       "telephone": {{ (listing.phone or listing.whatsapp or "")|tojson }},
       "address": {
         "@type": "PostalAddress",
-        "addressLocality": {{ listing.city.name|tojson }},
+        "addressLocality": {{ ((listing.city.name if listing.city else "") )|tojson }},
         "streetAddress": {{ (listing.address or "")|tojson }},
         "addressCountry": "DE"
       }
@@ -152,4 +108,4 @@
   </div>
 </div>
 
-{% endblock %}
+{% endblock content %}
