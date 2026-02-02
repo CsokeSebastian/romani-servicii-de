@@ -3,6 +3,7 @@ import requests
 import smtplib
 from email.message import EmailMessage
 import os
+import re
 
 def send_contact_email(name: str, sender_email: str, message: str):
     msg = EmailMessage()
@@ -63,3 +64,20 @@ def geocode_location(query: str):
         pass
 
     return None, None
+
+def phone_key(raw: str) -> str | None:
+    """
+    Cheie internă pentru deduplicare:
+    - scoate tot ce nu e cifră
+    - nu forțează lungime
+    - nu adaugă prefix
+    """
+    if not raw:
+        return None
+
+    digits = re.sub(r"\D", "", raw)
+
+    if len(digits) < 6:
+        return None
+
+    return digits

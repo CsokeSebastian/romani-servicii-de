@@ -3,13 +3,13 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 import cloudinary
 import cloudinary.uploader
 from sqlalchemy import func
-
+import os
 from ..extensions import db
 from ..models import Category, City, Listing, Submission
 from ..utils import slugify, languages_to_str, languages_from_str
 
 admin_bp = Blueprint("admin", __name__)
-
+basedir = os.path.abspath(os.path.dirname(__file__))
 # --------------------
 # AUTH
 # --------------------
@@ -46,15 +46,22 @@ def setup_cloudinary():
 @admin_bp.route("/login", methods=["GET", "POST"])
 def login():
     from flask import current_app
+
     if request.method == "POST":
-        password = request.form.get("password", "")
-        if password == current_app.config["ADMIN_PASSWORD"]:
+        password = (request.form.get("password") or "").strip()
+        admin_pw = current_app.config.get("ADMIN_PASSWORD")
+
+        print(">>> ENTERED:", repr(password))
+        print(">>> CONFIG :", repr(admin_pw))
+
+        if password == admin_pw:
             session["is_admin"] = True
             flash("Logged in.", "success")
             return redirect(request.args.get("next") or url_for("admin.dashboard"))
-        flash("Wrong password.", "error")
-    return render_template("admin/login.html")
 
+        flash("Wrong password.", "error")
+
+    return render_template("admin/login.html")
 
 @admin_bp.get("/logout")
 def logout():

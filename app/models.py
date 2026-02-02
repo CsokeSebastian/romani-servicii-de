@@ -17,7 +17,34 @@ class City(db.Model):
     lng = db.Column(db.Float, nullable=True)
 
 class Listing(db.Model):
+    # id = db.Column(db.Integer, primary_key=True)
+    # name = db.Column(db.String(200), nullable=False)
+    # slug = db.Column(db.String(240), nullable=False, unique=True)
+
+    # description = db.Column(db.Text, nullable=True)
+
+    # category_id = db.Column(db.Integer, db.ForeignKey("category.id"), nullable=False)
+    # city_id = db.Column(db.Integer, db.ForeignKey("city.id"), nullable=False)
+
+    # address = db.Column(db.String(255), nullable=True)
+    # phone = db.Column(db.String(80), nullable=True)
+    # whatsapp = db.Column(db.String(80), nullable=True)
+    # website = db.Column(db.String(255), nullable=True)
+
+    # languages = db.Column(db.String(50), nullable=True)  # "ro,de,en"
+    # verified = db.Column(db.Boolean, default=False)
+    # featured = db.Column(db.Boolean, default=False)
+
+    # image_url = db.Column(db.String(500), nullable=True)  # Cloudinary URL
+
+    # created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    # updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # category = db.relationship("Category")
+    # city = db.relationship("City")
+
     id = db.Column(db.Integer, primary_key=True)
+
     name = db.Column(db.String(200), nullable=False)
     slug = db.Column(db.String(240), nullable=False, unique=True)
 
@@ -27,8 +54,16 @@ class Listing(db.Model):
     city_id = db.Column(db.Integer, db.ForeignKey("city.id"), nullable=False)
 
     address = db.Column(db.String(255), nullable=True)
+
+    # ✅ ce afișezi tu pe site (cum vrei: fără prefix, cu spații etc.)
     phone = db.Column(db.String(80), nullable=True)
     whatsapp = db.Column(db.String(80), nullable=True)
+
+    # ✅ chei interne pentru dedup (DOAR CIFRE)
+    # Postgres permite multiple NULL chiar dacă e unique=True
+    phone_key = db.Column(db.String(30), nullable=True, unique=True, index=True)
+    whatsapp_key = db.Column(db.String(30), nullable=True, unique=True, index=True)
+
     website = db.Column(db.String(255), nullable=True)
 
     languages = db.Column(db.String(50), nullable=True)  # "ro,de,en"
